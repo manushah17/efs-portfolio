@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import dj_database_url
 from django.conf.global_settings import EMAIL_USE_TLS, EMAIL_HOST, EMAIL_PORT,\
-    EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL, EMAIL_BACKEND
+    EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL, EMAIL_BACKEND,\
+    SECURE_PROXY_SSL_HEADER
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,7 +29,7 @@ SECRET_KEY = '00)mfe3$ep^4n1pdggh1z*@p_pz7gwskxf)n9-hl9kpjjj6(i4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
@@ -84,8 +86,13 @@ WSGI_APPLICATION = 'efsblog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd1lu6j4e00c30t',
+        'USER': 'rfivrmzcnwqdrn',
+        'PASSWORD': '6be3d815579e32158c3f0f3d1b19c3c687ae5b01902a981acff0b644974a1446',
+        'HOST' : 'postgres://rfivrmzcnwqdrn:6be3d815579e32158c3f0f3d1b19c3c687ae5b01902a981acff0b644974a1446@ec2-54-163-237-25.compute-1.amazonaws.com:5432/d1lu6j4e00c30t',
+        'PORT' : '5432',
+        
     }
 }
 
@@ -126,5 +133,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# Update databse configuration
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
+
+
+SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO','https')
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
