@@ -1,0 +1,14 @@
+{% extends 'portfolio/base.html' %}
+
+{% block content %}
+    <h1>Edit Stock</h1>
+    <form method="POST" class="stock-form">{% csrf_token %}
+        {{ form.as_p }}
+        <table>
+        <tr>
+         	<td><button type="submit" class="save btn btn-default">Update</button></td>
+         	<td><a href="{% url 'portfolio:stock_list' %}" class="btn btn-default">Cancel</a></td>
+        </tr>
+    </table>
+    </form>
+{% endblock %}
